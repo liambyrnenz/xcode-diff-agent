@@ -1,0 +1,90 @@
+[
+  {
+    "id": "mock-26-new",
+    "text": "Xcode 26.0 adds a mock Previews inspector for SwiftUI. The simulator gains a new mock device configuration for iPhone testing.",
+    "heading": "New Features",
+    "version": "26.0",
+    "source_type": "xcode_release_notes",
+    "url": "https://example.com/mock/xcode-26-release-notes#new-features"
+  },
+  {
+    "id": "mock-26-deprecations",
+    "text": "The mock legacy build system option is deprecated in Xcode 26.0 and will be removed in a future release. Projects using the legacy build setting should migrate.",
+    "heading": "Deprecations",
+    "version": "26.0",
+    "source_type": "xcode_release_notes",
+    "url": "https://example.com/mock/xcode-26-release-notes#deprecations"
+  },
+  {
+    "id": "mock-26-behavior",
+    "text": "Behavior change: the mock linker now strips unused symbols by default. Existing projects may see smaller binaries.",
+    "heading": "Behavior Changes",
+    "version": "26.0",
+    "source_type": "xcode_release_notes",
+    "url": "https://example.com/mock/xcode-26-release-notes#behavior-changes"
+  },
+  {
+    "id": "mock-164-new",
+    "text": "Xcode 16.4 adds mock support for the iOS 18.5 SDK and improves simulator startup time.",
+    "heading": "New Features",
+    "version": "16.4",
+    "source_type": "xcode_release_notes",
+    "url": "https://example.com/mock/xcode-16-4-release-notes#new-features"
+  },
+  {
+    "id": "mock-164-deprecations",
+    "text": "The mock legacy build system option is available but emits a warning in Xcode 16.4.",
+    "heading": "Deprecations",
+    "version": "16.4",
+    "source_type": "xcode_release_notes",
+    "url": "https://example.com/mock/xcode-16-4-release-notes#deprecations"
+  },
+  {
+    "id": "mock-164-behavior",
+    "text": "Behavior change: debugger breakpoints in mock Swift packages now resolve lazily.",
+    "heading": "Behavior Changes",
+    "version": "16.4",
+    "source_type": "xcode_release_notes",
+    "url": "https://example.com/mock/xcode-16-4-release-notes#behavior-changes"
+  },
+  {
+    "id": "mock-26-sysreq",
+    "text": "Xcode 26.0 requires macOS 15.6 or later to run. It includes Swift 6.2 and the iOS 26.0 SDK.",
+    "heading": "System Requirements",
+    "version": "26.0",
+    "source_type": "system_requirements",
+    "url": "https://example.com/mock/system-requirements#26-0"
+  },
+  {
+    "id": "mock-164-sysreq",
+    "text": "Xcode 16.4 requires macOS 14.5 or later to run. It includes Swift 6.1 and the iOS 18.5 SDK.",
+    "heading": "System Requirements",
+    "version": "16.4",
+    "source_type": "system_requirements",
+    "url": "https://example.com/mock/system-requirements#16-4"
+  },
+  {
+    "id": "mock-news-26",
+    "text": "Apple announced that Xcode 26 is now available to download. This is mock announcement text.",
+    "heading": "Xcode 26 now available",
+    "version": null,
+    "source_type": "news",
+    "url": "https://example.com/mock/news/xcode-26"
+  },
+  {
+    "id": "mock-se-0000",
+    "text": "This mock proposal deprecates an old mock syntax for Swift generics and introduces a replacement.",
+    "heading": "SE-0000 Mock Proposal",
+    "version": null,
+    "source_type": "swift_evolution",
+    "url": "https://example.com/mock/swift-evolution/0000"
+  },
+  {
+    "id": "mock-ios-26-notes",
+    "text": "The mock iOS release notes describe a behavior change in background task scheduling.",
+    "heading": "iOS 26 Release Notes",
+    "version": null,
+    "source_type": "os_release_notes",
+    "url": "https://example.com/mock/ios-26-release-notes"
+  }
+]
