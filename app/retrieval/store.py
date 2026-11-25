@@ -25,7 +25,7 @@ class DocStore(Protocol):
                source_type: str | None = None, k: int = 6) -> list[Chunk]: ...
 
 
-_tok = re.compile(r"[a-z0-9_.]+")
+_tok = re.compile(r"[a-z0-9_]+(?:\.[0-9]+)*")
 
 
 def _tokens(s: str) -> list[str]:
@@ -50,6 +50,8 @@ class InMemoryKeywordStore:
     def search(self, query, *, version=None, source_type=None, k=6):
         q = _tokens(query)
         n = len(self._chunks) or 1
+        # Document frequency: dedup each chunk's own content, then count.
+        # Note: this work is repeated on every search at present.
         df = Counter(t for c in self._chunks for t in set(_tokens(c.text + " " + c.heading)))
         scored = []
         for c in self._chunks:
@@ -58,6 +60,7 @@ class InMemoryKeywordStore:
             if source_type and c.source_type != source_type:
                 continue
             tf = Counter(_tokens(c.text + " " + c.heading))
+            # Note: compare this against actual BM25 formula
             score = sum(tf[t] * math.log(1 + n / (1 + df[t])) for t in q)
             if score > 0:
                 scored.append((score, c))
