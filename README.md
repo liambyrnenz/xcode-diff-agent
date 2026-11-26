@@ -140,8 +140,11 @@ Run tests with `pytest`. The included test uses a fake `LLMClient`, so it needs 
 ## Roadmap / TODO
 
 **Next up**
+- [ ] **Introduce uv to replace pip, venv, etc.** `uv` seems more used in production, so try this out.
 - [ ] **Conversation history, streaming and auth.** `Agent.run` already accepts `history`, so multi-turn is mostly an API-layer change (session IDs, storage). Streaming means adding a streaming method to `LLMClient` and a StreamableHTTP endpoint - see `StreamingResponse`. Add authentication and rate limiting before exposing the service.
+- [ ] **RAG configuration.** RAG in this project is best for searching from the documents but not necessarily comparing across them. Perhaps start with limiting the project to queries best suited for RAG, then move on to databases supporting querying for comparisons.
 - [ ] **pgvector retrieval.** Replace `InMemoryKeywordStore` with a Postgres + pgvector implementation of `DocStore`. Aim for hybrid search (keyword + embeddings), with metadata filters on `version` and `source_type`, plus an embedding step in the ingestion pipeline. Keep the `DocStore` interface unchanged so the agent and tools don't need to change.
+- [ ] **Introduce LangChain.** Incorporate LangChain in to replace the manual code for things like agent handling, state management, streaming, etc. Consider also LangGraph.
 
 **Data and ingestion**
 - [ ] Parse the system requirements page (HTML) into `xcode_versions.json`.
