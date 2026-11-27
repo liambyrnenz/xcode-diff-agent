@@ -28,12 +28,12 @@ class GeminiVertexClient(LLMClient):
             contents.append(t.Content(role="model" if m.role == "assistant" else "user", parts=parts))
         return contents
 
-    async def complete(self, *, system, messages, tools=None, max_tokens=2048, temperature=0.0):
+    async def complete(self, *, system, messages, tools=None, max_tokens=2048):
         t = self._types
         config = t.GenerateContentConfig(
             system_instruction=system,
             max_output_tokens=max_tokens,
-            temperature=temperature,
+            temperature=0.0,
             tools=[t.Tool(function_declarations=[
                 t.FunctionDeclaration(name=s.name, description=s.description, parameters=s.input_schema)
                 for s in tools

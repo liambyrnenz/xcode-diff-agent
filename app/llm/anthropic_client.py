@@ -10,6 +10,9 @@ _STOP_MAP = {"end_turn": "end_turn", "tool_use": "tool_use", "max_tokens": "max_
 def _to_wire(messages: list[Message]) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     for m in messages:
+        if m.provider_content is not None:
+            out.append({"role": m.role, "content": m.provider_content})
+            continue
         blocks: list[dict[str, Any]] = []
         if m.text:
             blocks.append({"type": "text", "text": m.text})
@@ -33,13 +36,12 @@ class _AnthropicMessagesClient(LLMClient):
         self._client = client
         self._model = model
 
-    async def complete(self, *, system, messages, tools=None, max_tokens=2048, temperature=0.0):
+    async def complete(self, *, system, messages, tools=None, max_tokens=16000):
         kwargs: dict[str, Any] = dict(
             model=self._model,
             system=system,
             messages=_to_wire(messages),
-            max_tokens=max_tokens,
-            temperature=temperature,
+            max_tokens=max_tokens,  # covers thinking as well as the reply
         )
         if tools:
             kwargs["tools"] = [
@@ -58,6 +60,7 @@ class _AnthropicMessagesClient(LLMClient):
             tool_calls=calls,
             stop_reason=_STOP_MAP.get(resp.stop_reason, "other"),
             usage=Usage(resp.usage.input_tokens, resp.usage.output_tokens),
+            provider_content=list(resp.content),
         )
 
 

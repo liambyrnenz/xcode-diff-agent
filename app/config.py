@@ -15,7 +15,7 @@ class Settings(BaseSettings):
 
     gcp_project: str | None = None
     gcp_region: str = "us-east5"
-    vertex_claude_model: str = "claude-sonnet-4-5@20250929"
+    vertex_claude_model: str = "claude-sonnet-5-5"
     vertex_gemini_model: str = "gemini-2.5-pro"
 
     data_dir: Path = Path("./data")

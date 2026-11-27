@@ -28,6 +28,13 @@ class Agent:
         for step in range(1, self._max_steps + 1):
             resp = await self._llm.complete(
                 system=SYSTEM_PROMPT, messages=messages, tools=self._tools.specs)
+
+            # Check before using the content: it may be partial, and so may any tool calls.
+            if resp.stop_reason == "max_tokens":
+                note = "[Incomplete: the model reached its output token limit.]"
+                return AgentResult(f"{resp.text}\n\n{note}".strip(),
+                                   sorted(set(citations)), trace, step)
+
             messages.append(resp.to_message())
 
             if not resp.tool_calls:

@@ -6,12 +6,15 @@ Findings below are as of 2026-11-27. API and model details come from Anthropic's
 
 ## Phase 0: Fix before the first run
 
-- [ ] **Fix the Claude call.** `app/llm/anthropic_client.py` passes `temperature=0.0`, which the installed `anthropic` 2.14.0 doesn't accept. Both Claude clients fail with `TypeError: AsyncMessages.create() got an unexpected keyword argument 'temperature'` before sending a request. Remove the argument from the request. The existing tests use a fake `LLMClient`, so add a test that runs the real client against a mocked connection.
-- [ ] **Replace the default Vertex model** (urgent if using Vertex). The API reference lists Claude Sonnet 4.5 as retiring on 2026-11-30. Vertex's own schedule hasn't been checked. The ID is in `app/config.py` and `.env.example`.
-- [ ] **Check the rest of the tool loop against Claude Sonnet 5.5.** Found by reading the code and API reference:
-  - The client drops `thinking` blocks, which should be sent back unchanged.
-  - The 2,048 `max_tokens` limit has to cover thinking as well as the answer.
-  - The agent doesn't handle cut-off (`max_tokens`) or refused responses.
+Done in code and covered by `tests/test_anthropic_client.py`, which runs the real Anthropic SDK against a mocked connection. Live behaviour will be checked by the first end-to-end run in Phase 1.
+
+- [x] **Fix the Claude call.** The client passed `temperature=0.0`, which `anthropic` 2.14.0 doesn't accept, so both Claude clients failed before sending a request. Removed from the `LLMClient` interface; the Gemini client still uses 0.0.
+- [x] **Replace the default Vertex model.** Now `claude-sonnet-5-5` in `app/config.py` and `.env.example`, replacing Claude Sonnet 4.5 (listed as retiring on 2026-11-30). Availability in your Google Cloud project and the default `us-east5` region is unverified; check it before using the Vertex route.
+- [x] **Update the tool loop for Claude Sonnet 5.5.**
+  - Assistant turns, including `thinking` blocks, are sent back as received.
+  - The default `max_tokens` is 16,000 for the Claude clients, covering thinking and the answer.
+  - Cut-off (`max_tokens`) responses are marked incomplete, and their tool calls aren't run.
+  - Refused responses are deferred (see [Deferred](#deferred)).
 
 ## Phase 1: First local run, then local document storage
 
@@ -76,6 +79,7 @@ Check what of this exists first.
 
 ## Deferred
 
+- [ ] **Handle refused responses.** The agent doesn't check for a `refusal` stop reason, so it treats a refused response like any other: partial text can be returned as the answer, and any tool calls in it are run. Consider server-side refusal fallbacks too (beta, direct API only).
 - [ ] **`get_adoption_share(version)`:** OS version uptake data relevant to an Xcode version's SDK. Needs a data source before the tool is added back.
 
 ## Done

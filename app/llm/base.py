@@ -38,6 +38,9 @@ class Message:
     text: str | None = None
     tool_calls: list[ToolCall] = field(default_factory=list)
     tool_results: list[ToolResult] = field(default_factory=list)
+    # Assistant turns only: the backend's own content blocks. A client that sets this
+    # replays it as-is, keeping blocks the neutral fields can't express (e.g. thinking).
+    provider_content: list[Any] | None = None
 
 
 @dataclass
@@ -52,9 +55,11 @@ class LLMResponse:
     tool_calls: list[ToolCall]
     stop_reason: Literal["end_turn", "tool_use", "max_tokens", "other"]
     usage: Usage = field(default_factory=Usage)
+    provider_content: list[Any] | None = None
 
     def to_message(self) -> Message:
-        return Message(role="assistant", text=self.text or None, tool_calls=self.tool_calls)
+        return Message(role="assistant", text=self.text or None, tool_calls=self.tool_calls,
+                       provider_content=self.provider_content)
 
 
 class LLMClient(ABC):
@@ -67,6 +72,5 @@ class LLMClient(ABC):
         system: str,
         messages: list[Message],
         tools: list[ToolSpec] | None = None,
-        max_tokens: int = 2048,
-        temperature: float = 0.0,
+        max_tokens: int = 16000,
     ) -> LLMResponse: ...
