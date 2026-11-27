@@ -61,7 +61,9 @@ The system prompt (`app/agent/prompts.py`) tells the model to ground every claim
 
 ```
 xcode-diff-agent/
-├── pyproject.toml              # dependencies; optional extras per provider
+├── pyproject.toml              # dependencies; optional extras per provider; dev group
+├── uv.lock                     # locked dependency versions (managed by uv)
+├── .python-version             # Python version uv uses for local development
 ├── .env.example                # copy to .env
 ├── README.md
 ├── app/
@@ -116,17 +118,22 @@ Copy `.env.example` to `.env`.
 
 ## Running it
 
+This project uses [uv](https://docs.astral.sh/uv/) to manage Python, the virtual environment and dependencies. [Install it](https://docs.astral.sh/uv/getting-started/installation/) first (e.g. `brew install uv`).
+
 ```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[anthropic,dev]"      # add ,gemini if using gemini_vertex
+uv sync --extra anthropic              # creates .venv, including dev tools
 cp .env.example .env                   # fill in provider settings
-python -m scripts.ingest               # (run from the project root)
-uvicorn app.main:app --reload
+uv run python -m scripts.ingest        # (run from the project root)
+uv run uvicorn app.main:app --reload
 curl -X POST localhost:8000/ask -H 'content-type: application/json' \
   -d '{"question":"What changed between Xcode 16.4 and 26.0 for macOS compatibility?"}'
 ```
 
-Run tests with `pytest`. The included test uses a fake `LLMClient`, so it needs no API keys.
+Pick the extras for your `LLM_PROVIDER`: `--extra anthropic` for `anthropic` and `anthropic_vertex`, or `--extra gemini` for `gemini_vertex`. To install both, pass both flags. `uv sync` makes the environment match the flags you pass, so leaving out an extra removes its packages. `uv run` keeps extra packages that are already installed, but doesn't add extras to a new environment.
+
+Run tests with `uv run pytest`. The agent loop test uses a fake `LLMClient`, so it needs no API keys.
+
+To change dependencies, use `uv add` / `uv remove` (with `--dev` for dev tools, or `--optional <extra>` for a provider SDK), and commit both `pyproject.toml` and `uv.lock`.
 
 ## Known limitations
 
@@ -140,7 +147,7 @@ Run tests with `pytest`. The included test uses a fake `LLMClient`, so it needs 
 ## Roadmap / TODO
 
 **Next up**
-- [ ] **Introduce uv to replace pip, venv, etc.** `uv` seems more used in production, so try this out.
+- [x] **Introduce uv to replace pip, venv, etc.** `uv` seems more used in production, so try this out.
 - [ ] **Conversation history, streaming and auth.** `Agent.run` already accepts `history`, so multi-turn is mostly an API-layer change (session IDs, storage). Streaming means adding a streaming method to `LLMClient` and a StreamableHTTP endpoint - see `StreamingResponse`. Add authentication and rate limiting before exposing the service.
 - [ ] **RAG configuration.** RAG in this project is best for searching from the documents but not necessarily comparing across them. Perhaps start with limiting the project to queries best suited for RAG, then move on to databases supporting querying for comparisons.
 - [ ] **pgvector retrieval.** Replace `InMemoryKeywordStore` with a Postgres + pgvector implementation of `DocStore`. Aim for hybrid search (keyword + embeddings), with metadata filters on `version` and `source_type`, plus an embedding step in the ingestion pipeline. Keep the `DocStore` interface unchanged so the agent and tools don't need to change.
