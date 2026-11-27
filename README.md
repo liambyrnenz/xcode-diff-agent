@@ -66,6 +66,8 @@ xcode-diff-agent/
 ├── .python-version             # Python version uv uses for local development
 ├── .env.example                # copy to .env
 ├── README.md
+├── plans/
+│   └── roadmap.md              # phased plan and TODOs
 ├── app/
 │   ├── main.py                 # FastAPI app; wires store, facts, LLM and agent in lifespan
 │   ├── config.py               # pydantic-settings; all env config lives here
@@ -146,31 +148,4 @@ To change dependencies, use `uv add` / `uv remove` (with `--dev` for dev tools, 
 
 ## Roadmap / TODO
 
-**Next up**
-- [x] **Introduce uv to replace pip, venv, etc.** `uv` seems more used in production, so try this out.
-- [ ] **Conversation history, streaming and auth.** `Agent.run` already accepts `history`, so multi-turn is mostly an API-layer change (session IDs, storage). Streaming means adding a streaming method to `LLMClient` and a StreamableHTTP endpoint - see `StreamingResponse`. Add authentication and rate limiting before exposing the service.
-- [ ] **RAG configuration.** RAG in this project is best for searching from the documents but not necessarily comparing across them. Perhaps start with limiting the project to queries best suited for RAG, then move on to databases supporting querying for comparisons.
-- [ ] **pgvector retrieval.** Replace `InMemoryKeywordStore` with a Postgres + pgvector implementation of `DocStore`. Aim for hybrid search (keyword + embeddings), with metadata filters on `version` and `source_type`, plus an embedding step in the ingestion pipeline. Keep the `DocStore` interface unchanged so the agent and tools don't need to change.
-- [ ] **Introduce LangChain.** Incorporate LangChain in to replace the manual code for things like agent handling, state management, streaming, etc. Consider also LangGraph.
-
-**Data and ingestion**
-- [ ] Parse the system requirements page (HTML) into `xcode_versions.json`.
-- [ ] Discover and ingest all Xcode release-note versions, not just one.
-- [ ] Add Apple Developer news (RSS), OS release notes, and Swift Evolution proposals / CHANGELOG.
-- [ ] Incremental ingestion (skip unchanged documents, content hashing).
-- [ ] Keep the full heading path on chunks and preserve bullet lists.
-
-**Agent**
-- [ ] Cover intermediate versions in `diff_availability`.
-- [ ] Run independent tool calls concurrently with `asyncio.gather`.
-- [ ] Retry and backoff on model/API errors.
-- [ ] Evaluation set of version-diff questions with expected answers.
-- [ ] Agentic loop via framework like LangChain.
-
-**Deferred**
-- [ ] `get_adoption_share(version)`: OS version uptake data relevant to an Xcode version's SDK. Needs a data source before the tool is added.
-
-**Productionising**
-- This client shouldn't really be responsible for handling LLM usage, that should be the responsibility of the cloud provider. As such, maybe the direct Anthropic SDK route can be removed.
-- OpenTelemetry or something similar for costs.
-- Structured logging, request IDs, error-handling middleware, API-key auth between the app and backend, and a test suite that mocks the Anthropic client. (Check what of this exists first.)
+See [`plans/roadmap.md`](plans/roadmap.md) for the phased plan: pre-run fixes, a first local run and document storage, RAG and querying, then deployment.
